@@ -9,27 +9,27 @@
 #define S32                  40 //(PISTÃO CAMERA AVANÇADO)
 #define BT1                  41 //(BOTÃO BERÇO 1)
 #define BT2                  42 //(BOTÃO BERÇO 2)
-#define BTN_RESET            43     
+#define BTN_RESET            43 //(BOTÃO RST)    
 #define RELE_DE_SEGURANCA    44 
 
 //SÁIDAS
-#define MODULE_PWM           18 //(SOLENOIDE Y7 - AVANÇO PRESSORES)
+#define PRESS           18 //(Y7 - AVANÇO PRESSORES)
 #define KRST                 19 //(RELÉ RESET)
-#define K1                   20 //(SOLENOIDE Y2 - AVANÇO BERÇO 1)
-#define K2                   21 //(SOLENOIDE Y3 - AVANÇO BERÇO 2)
-#define K3                   22 //(SOLENOIDE Y4 - AVANÇA TRAVA CONTROLE BERÇO 1)
-#define K4                   23 //(SOLENOIDE Y5 - AVANÇA TRAVA CONTROLE BERÇO 2)
-#define K5                   24 //(SOLENOIDE Y6 - AVANA TRAVA CAMERAS)
-#define K6                   25 //(SOLENOIDE Y8 - AVANÇO PILHAS BERÇO 1)
-#define K7                   45 //(SOLENOIDE Y9 - AVANÇO PILHAS BERÇO 2) Antigo pino 26
+#define K1                   20 //(Y2 - AV_B 1)
+#define K2                   21 //(Y3 - AV_B 2)
+#define K3                   22 //(Y4 - AVANÇA TRAVA CONTROLE BERÇO 1)
+#define K4                   23 //(Y5 - AVANÇA TRAVA CONTROLE BERÇO 2)
+#define K5                   24 //(Y6 - AVANA TRAVA CAMERAS)
+#define K6                   25 //(Y8 - AVANÇO PILHAS BERÇO 1)
+#define K7                   45 //(Y9 - AVANÇO PILHAS BERÇO 2) Antigo pino 26
 #define K8                   27 //(3V PILHAS BERÇO 1)
 #define K9                   28 //(3V PILHAS BERÇO 2)
 #define K10                  29 //(5V IR BERÇO 1)
 #define K11                  30 //(5V IR BERÇO 2)
-#define K12                  31 //(LUZ VERDE)
-#define K13                  32 //(LUZ AMARELA)
-#define K14                  33 //(LUZ VERMELHA)
-#define RESET_ARDUINOS_NANOS 34 
+#define K12                  31 //(GREEN LED)
+#define K13                  32 //(YELLOW LED)
+#define K14                  33 //(RED LED)
+#define RST_NANO 34 
 
 bool estadoAnteriorBT1 = LOW;
 bool estadoAnteriorBT2 = LOW;
@@ -43,6 +43,11 @@ bool lastS31 = HIGH;
 bool lastS32 = HIGH;
 
 String cmd = "";
+void SerialRead();
+void alternarPino(String cmd);
+void resetStarts();
+void return_sensors();
+void btnRST();
 
 void SerialRead() {
   while (Serial.available()) {
@@ -65,12 +70,12 @@ void return_sensors() {
   bool currentS31 = digitalRead(S31);
   bool currentS32 = digitalRead(S32);
 
-  if (currentS11 != lastS11 && currentS11 == LOW) Serial.println("BED1_OFF");
-  if (currentS12 != lastS12 && currentS12 == LOW) Serial.println("BED1_ON");
-  if (currentS21 != lastS21 && currentS21 == LOW) Serial.println("BED2_OFF");
-  if (currentS22 != lastS22 && currentS22 == LOW) Serial.println("BED2_ON");
-  if (currentS31 != lastS31 && currentS31 == LOW) Serial.println("PIST_OFF");
-  if (currentS32 != lastS32 && currentS32 == LOW) Serial.println("PIST_ON");
+  if (currentS11 != lastS11 && currentS11 == LOW) Serial.println("BED1_OFF;");
+  if (currentS12 != lastS12 && currentS12 == LOW) Serial.println("BED1_ON;");
+  if (currentS21 != lastS21 && currentS21 == LOW) Serial.println("BED2_OFF;");
+  if (currentS22 != lastS22 && currentS22 == LOW) Serial.println("BED2_ON;");
+  if (currentS31 != lastS31 && currentS31 == LOW) Serial.println("PIST_OFF;");
+  if (currentS32 != lastS32 && currentS32 == LOW) Serial.println("PIST_ON;");
 
   // Atualiza os estados anteriores
   lastS11 = currentS11;
@@ -80,115 +85,92 @@ void return_sensors() {
   lastS31 = currentS31;
   lastS32 = currentS32;
 }
+
+struct ComandoPino {
+  String nome;
+  uint8_t pino;
+  const char* msgOn;
+  const char* msgOff;
+};
+
+// Lista de todos os comandos
+ComandoPino comandos[] = {
+  {"MPWM",     PRESS,      "PRESS_ON;"   , "PRESS_OFF;"},
+  {"KRST",     KRST,       "KRST_ON;"    , "KRST_OFF;"},
+  {"K1",       K1,         "AV_B1_ON;"   , "AV_B1_OFF;"},
+  {"K2",       K2,         "AV_B2_ON;"   , "AV_B2_OFF;"},
+  {"K3",       K3,         "TR_B1_ON;"   , "TR_B1_OFF;"},
+  {"K4",       K4,         "TR_B2_ON;"   , "TR_B2_OFF;"},
+  {"K5",       K5,         "TR_CAM_ON;"  , "TR_CAM_OFF;"},
+  {"K6",       K6,         "BT_B1_ON;"   , "BT_B1_OFF;"},
+  {"K7",       K7,         "BT_B2_ON;"   , "BT_B2_OFF;"},
+  {"K8",       K8,         "3V_1_ON;"    , "3V_1_OFF;"},
+  {"K9",       K9,         "3V_2_ON;"    , "3V_2_OFF;"},
+  {"K10",      K10,        "PIR_1_ON;"   , "PIR_1_OFF;"},
+  {"K11",      K11,        "PIR_2_ON;"   , "PIR_2_OFF;"},
+  {"K12",      K12,        "GRE_ON;"     , "GRE_OFF"},
+  {"K13",      K13,        "YEL_ON;"     , "YEL_OFF"},
+  {"K14",      K14,        "RED_ON;"     , "RED_OFF"},
+  {"RST_NANO", RST_NANO,   "RNANO_ON;"   , "RNANO_OFF;"}
+};
+
+const int numComandos = sizeof(comandos) / sizeof(comandos[0]);
+
 void alternarPino(String cmd) {
   delay(10);
-  if (cmd == "MODULE_PWM") {
-    bool estado = !digitalRead(MODULE_PWM);
-    delay(10);
-    digitalWrite(MODULE_PWM, estado);
-    Serial.println(estado ? "SOLENOIDE Y7 - AVANÇO PRESSORES ON" : "SOLENOIDE Y7 - AVANÇO PRESSORES OFF");
-  }
-  else if (cmd == "KRST") {
-    bool estado = !digitalRead(KRST);
-    digitalWrite(KRST, estado);
-    Serial.println(estado ? "RELÉ RESET ON" : "RELÉ RESET OFF");
-  }
-  else if (cmd == "K1") {
-    bool estado = !digitalRead(K1);
-    digitalWrite(K1, estado);
-    Serial.println(estado ? "SOLENOIDE Y2 - AVANÇO BERÇO 1 ON" : "SOLENOIDE Y2 - AVANÇO BERÇO 1 OFF");
-  }
-  else if (cmd == "K2") {
-    bool estado = !digitalRead(K2);
-    digitalWrite(K2, estado);
-    Serial.println(estado ? "SOLENOIDE Y3 - AVANÇO BERÇO 2 ON" : "SOLENOIDE Y3 - AVANÇO BERÇO 2 OFF");
-  }
-  else if (cmd == "K3") {
-    bool estado = !digitalRead(K3);
-    digitalWrite(K3, estado);
-    Serial.println(estado ? "SOLENOIDE Y4 - TRAVA BERÇO 1 ON" : "SOLENOIDE Y4 - TRAVA BERÇO 1 OFF");
-  }
-  else if (cmd == "K4") {
-    bool estado = !digitalRead(K4);
-    digitalWrite(K4, estado);
-    Serial.println(estado ? "SOLENOIDE Y5 - TRAVA BERÇO 2 ON" : "SOLENOIDE Y5 - TRAVA BERÇO 2 OFF");
-  }
-  else if (cmd == "K5") {
-    bool estado = !digitalRead(K5);
-    digitalWrite(K5, estado);
-    Serial.println(estado ? "SOLENOIDE Y6 - TRAVA CÂMERAS ON" : "SOLENOIDE Y6 - TRAVA CÂMERAS OFF");
-  }
-  else if (cmd == "K6") {
-    bool estado = !digitalRead(K6);
-    digitalWrite(K6, estado);
-    Serial.println(estado ? "SOLENOIDE Y8 - PILHAS BERÇO 1 ON" : "SOLENOIDE Y8 - PILHAS BERÇO 1 OFF");
-  }
-  else if (cmd == "K7") {
-    bool estado = !digitalRead(K7);
-    digitalWrite(K7, estado);
-    Serial.println(estado ? "SOLENOIDE Y9 - PILHAS BERÇO 2 ON" : "SOLENOIDE Y9 - PILHAS BERÇO 2 OFF");
-  }
-  else if (cmd == "K8") {
-    bool estado = !digitalRead(K8);
-    digitalWrite(K8, estado);
-    Serial.println(estado ? "3V PILHAS BERÇO 1 ON" : "3V PILHAS BERÇO 1 OFF");
-  }
-  else if (cmd == "K9") {
-    bool estado = !digitalRead(K9);
-    digitalWrite(K9, estado);
-    Serial.println(estado ? "3V PILHAS BERÇO 2 ON" : "3V PILHAS BERÇO 2 OFF");
-  }
-  else if (cmd == "K10") {
-    bool estado = !digitalRead(K10);
-    digitalWrite(K10, estado);
-    Serial.println(estado ? "5V IR BERÇO 1 ON" : "5V IR BERÇO 1 OFF");
-  }
-  else if (cmd == "K11") {
-    bool estado = !digitalRead(K11);
-    digitalWrite(K11, estado);
-    Serial.println(estado ? "5V IR BERÇO 2 ON" : "5V IR BERÇO 2 OFF");
-  }
-  else if (cmd == "K12") {
-    bool estado = !digitalRead(K12);
-    digitalWrite(K12, estado);
-    Serial.println(estado ? "LUZ VERDE ON" : "LUZ VERDE OFF");
-  }
-  else if (cmd == "K13") {
-    bool estado = !digitalRead(K13);
-    digitalWrite(K13, estado);
-    Serial.println(estado ? "LUZ AMARELA ON" : "LUZ AMARELA OFF");
-  }
-  else if (cmd == "K14") {
-    bool estado = !digitalRead(K14);
-    digitalWrite(K14, estado);
-    Serial.println(estado ? "LUZ VERMELHA ON" : "LUZ VERMELHA OFF");
-  }
-  else if (cmd == "RESET_ARDUINOS_NANOS") {
-    bool estado = !digitalRead(RESET_ARDUINOS_NANOS);
-    digitalWrite(RESET_ARDUINOS_NANOS, estado);
-    Serial.println(estado ? "RESET NANOS ATIVO" : "RESET NANOS INATIVO");
+
+  for (int i = 0; i < numComandos; i++) {
+    if (cmd == comandos[i].nome + "_1") {
+      Serial.println(comandos[i].msgOn);
+      digitalWrite(comandos[i].pino, HIGH);
+      return;
+    }
+    if (cmd == comandos[i].nome + "_0") {
+      Serial.println(comandos[i].msgOff);
+      digitalWrite(comandos[i].pino, LOW);
+      return;
+    }
   }
 }
 
+
+void btnRST(){
+  if(digitalRead(BTN_RESET) == LOW){
+    Serial.println("BTN RST");
+    digitalWrite(KRST,HIGH);
+    delay(200);
+    digitalWrite(KRST,LOW);
+    delay(300);
+  }
+}
 
 void btnStart(int pin) {
   int counter = 0;
   bool holding = digitalRead(pin);  
-  if (holding == true && start1 == false) {
-    while(holding){
+  if (holding == false && start1 == false && start2 == false) {
+    while(!holding){
       delay(100);
       counter++;
-      Serial.println(counter);
+      //Serial.println(counter);
       holding = digitalRead(pin);
-      if(counter >= 10) break;
+      if (counter == 5){
+        if (pin == BT1){
+          Serial.println("START1");
+          start1 = true;
+        }
+        else { 
+          Serial.println("START2");
+          start2 = true;
+        }
+        break;
+      }
     }
-    if (counter >= 3) {
-      if (pin == BT1) Serial.print("START1");
-      else Serial.print("START2");
-    }
+  holding = true;
   }
 }
-
+void resetStarts(){
+  start1 = false; start2 = false;
+}
 void setup(){
   Serial.begin(115200);
   Serial.println("Ativo");
@@ -197,7 +179,7 @@ void setup(){
     pinMode(i,INPUT_PULLUP);
   }
   for(int i = 41; i<45 ; i++){
-    pinMode(i,INPUT);
+    pinMode(i,INPUT_PULLUP);
   }
   //SAIDAS
   for(int i = 18; i<35; i++){
@@ -211,7 +193,7 @@ void loop(){
   return_sensors();
   btnStart(BT1);
   btnStart(BT2);
-
+  btnRST();
   return_sensors();
   cmd = "";
 }
