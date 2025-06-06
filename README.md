@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Testador de Controle Cartesiano
 
 Este projeto contém o código de controle para um **testador de controle cartesiano**, utilizado para verificar e acionar diversos atuadores, sensores e relés de forma automatizada por meio de comandos via porta serial.
@@ -42,10 +41,17 @@ A resposta serial retornada para cada comando também é listada abaixo:
 - Cada comando recebe uma confirmação por mensagem no mesmo canal serial, facilitando logs e automação.
 - Esse sistema foi desenvolvido com foco em **testes manuais ou automatizados de bancada**.
 
+## Saídas dos Sensores
 ---
 
-🛠️ **Desenvolvido para facilitar a validação de hardware cartesiano com múltiplos atuadores e sensores.**
-=======
-# r-controller-tester
-Firmware
->>>>>>> 2744d6d7a9447a9e81e6b0564c6c750c77b893f0
+| Sensor | Definição                   | Mensagem Serial enviada |
+| ------ | --------------------------- | ----------------------- |
+| S11    | 35 (BERÇO 1 RECUADO)        | BED1\_OFF;              |
+| S12    | 36 (BERÇO 1 AVANÇADO)       | BED1\_ON;               |
+| S21    | 37 (BERÇO 2 RECUADO)        | BED2\_OFF;              |
+| S22    | 38 (BERÇO 2 AVANÇADO)       | BED2\_ON;               |
+| S31    | 39 (PISTÃO CAMERA RECUADO)  | PIST\_OFF;              |
+| S32    | 40 (PISTÃO CAMERA AVANÇADO) | PIST\_ON;               |
+
+
+
