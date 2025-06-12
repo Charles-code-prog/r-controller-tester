@@ -14,10 +14,10 @@ A resposta serial retornada para cada comando também é listada abaixo:
 
 ## 🧭 Tabela de Comandos Seriais
 
-| **Pino** | **Comando para ligar** | **Mensagem ON** | **Comando para desligar** | **Mensagem OFF** |
+| **Pino** | **Comando para ligar** | **Mensagem ON**  | **Comando para desligar**  | **Mensagem OFF**  |
 |---------:|------------------------|------------------|----------------------------|-------------------|
-| 18       | `MPWM_1`               | `PRESS_ON;`      | `MPWM_0`                   | `PRESS_OFF;`      |
-| 19       | `KRST_1`               | `KRST_ON;`       | `KRST_0`                   | `KRST_OFF;`       |
+| 18       | `P_1`                  | `PRESS_ON;`      | `P_0`                      | `PRESS_OFF;`      |
+| 19       | `KR_1`                 | `KRST_ON;`       | `KR_0`                     | `KRST_OFF;`       |
 | 20       | `K1_1`                 | `AV_B1_ON;`      | `K1_0`                     | `AV_B1_OFF;`      |
 | 21       | `K2_1`                 | `AV_B2_ON;`      | `K2_0`                     | `AV_B2_OFF;`      |
 | 22       | `K3_1`                 | `TR_B1_ON;`      | `K3_0`                     | `TR_B1_OFF;`      |
@@ -32,7 +32,7 @@ A resposta serial retornada para cada comando também é listada abaixo:
 | 31       | `K12_1`                | `GRE_ON;`        | `K12_0`                    | `GRE_OFF;`        |
 | 32       | `K13_1`                | `YEL_ON;`        | `K13_0`                    | `YEL_OFF;`        |
 | 33       | `K14_1`                | `RED_ON;`        | `K14_0`                    | `RED_OFF;`        |
-| 34       | `RST_NANO_1`          | `RNANO_ON;`      | `RST_NANO_0`               | `RNANO_OFF;`      |
+| 34       | `RNA_1`                | `RNANO_ON;`      | `RNA_0`                    | `RNANO_OFF;`      |
 
 ---
 

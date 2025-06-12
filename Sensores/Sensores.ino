@@ -1,35 +1,35 @@
 #include <Arduino.h>
 
 //ENTRADAS
-#define S11                  35 //(BERÇO 1 RECUADO)
-#define S12                  36 //(BERÇO 1 AVANÇADO)
-#define S21                  37 //(BERÇO 2 RECUADO)
-#define S22                  38 //(BERÇO 2 AVANÇADO)
+#define S11                  35 //(BERÇO 2 RECUADO)
+#define S12                  36 //(BERÇO 2 AVANÇADO)
+#define S21                  37 //(BERÇO 1 RECUADO)
+#define S22                  38 //(BERÇO 1 AVANÇADO)
 #define S31                  39 //(PISTÃO CAMERA RECUADO)
 #define S32                  40 //(PISTÃO CAMERA AVANÇADO)
-#define BT1                  41 //(BOTÃO BERÇO 1)
-#define BT2                  42 //(BOTÃO BERÇO 2)
+#define BT2                  41 //(BOTÃO BERÇO 2)
+#define BT1                  42 //(BOTÃO BERÇO 1)
 #define BTN_RESET            43 //(BOTÃO RST)    
 #define RELE_DE_SEGURANCA    44 
 
 //SÁIDAS
-#define PRESS           18 //(Y7 - AVANÇO PRESSORES)
+#define PRESS                18 //(Y7 - AVANÇO PRESSORES)
 #define KRST                 19 //(RELÉ RESET)
-#define K1                   20 //(Y2 - AV_B 1)
-#define K2                   21 //(Y3 - AV_B 2)
-#define K3                   22 //(Y4 - AVANÇA TRAVA CONTROLE BERÇO 1)
-#define K4                   23 //(Y5 - AVANÇA TRAVA CONTROLE BERÇO 2)
+#define K1                   20 //(Y2 - AV_B 2)
+#define K2                   21 //(Y3 - AV_B 1)
+#define K3                   22 //(Y4 - AVANÇA TRAVA CONTROLE BERÇO 2)
+#define K4                   23 //(Y5 - AVANÇA TRAVA CONTROLE BERÇO 1)
 #define K5                   24 //(Y6 - AVANA TRAVA CAMERAS)
-#define K6                   25 //(Y8 - AVANÇO PILHAS BERÇO 1)
-#define K7                   45 //(Y9 - AVANÇO PILHAS BERÇO 2) Antigo pino 26
-#define K8                   27 //(3V PILHAS BERÇO 1)
-#define K9                   28 //(3V PILHAS BERÇO 2)
-#define K10                  29 //(5V IR BERÇO 1)
-#define K11                  30 //(5V IR BERÇO 2)
+#define K6                   25 //(Y8 - AVANÇO PILHAS BERÇO 2)
+#define K7                   45 //(Y9 - AVANÇO PILHAS BERÇO 1) Antigo pino 26
+#define K8                   27 //(3V PILHAS BERÇO 2)
+#define K9                   28 //(3V PILHAS BERÇO 1)
+#define K10                  29 //(5V IR BERÇO 2)
+#define K11                  30 //(5V IR BERÇO 1)
 #define K12                  31 //(GREEN LED)
 #define K13                  32 //(YELLOW LED)
 #define K14                  33 //(RED LED)
-#define RST_NANO 34 
+#define RST_NANO             34 //(RESET NANOS)
 
 bool estadoAnteriorBT1 = LOW;
 bool estadoAnteriorBT2 = LOW;
@@ -70,10 +70,10 @@ void return_sensors() {
   bool currentS31 = digitalRead(S31);
   bool currentS32 = digitalRead(S32);
 
-  if (currentS11 != lastS11 && currentS11 == LOW) Serial.println("BED1_OFF;");
-  if (currentS12 != lastS12 && currentS12 == LOW) Serial.println("BED1_ON;");
-  if (currentS21 != lastS21 && currentS21 == LOW) Serial.println("BED2_OFF;");
-  if (currentS22 != lastS22 && currentS22 == LOW) Serial.println("BED2_ON;");
+  if (currentS11 != lastS11 && currentS11 == LOW) Serial.println("BED2_OFF;");
+  if (currentS12 != lastS12 && currentS12 == LOW) Serial.println("BED2_ON;");
+  if (currentS21 != lastS21 && currentS21 == LOW) Serial.println("BED1_OFF;");
+  if (currentS22 != lastS22 && currentS22 == LOW) Serial.println("BED1_ON;");
   if (currentS31 != lastS31 && currentS31 == LOW) Serial.println("PIST_OFF;");
   if (currentS32 != lastS32 && currentS32 == LOW) Serial.println("PIST_ON;");
 
@@ -95,23 +95,23 @@ struct ComandoPino {
 
 // Lista de todos os comandos
 ComandoPino comandos[] = {
-  {"MPWM",     PRESS,      "PRESS_ON;"   , "PRESS_OFF;"},
-  {"KRST",     KRST,       "KRST_ON;"    , "KRST_OFF;"},
-  {"K1",       K1,         "AV_B1_ON;"   , "AV_B1_OFF;"},
-  {"K2",       K2,         "AV_B2_ON;"   , "AV_B2_OFF;"},
-  {"K3",       K3,         "TR_B1_ON;"   , "TR_B1_OFF;"},
-  {"K4",       K4,         "TR_B2_ON;"   , "TR_B2_OFF;"},
-  {"K5",       K5,         "TR_CAM_ON;"  , "TR_CAM_OFF;"},
-  {"K6",       K6,         "BT_B1_ON;"   , "BT_B1_OFF;"},
-  {"K7",       K7,         "BT_B2_ON;"   , "BT_B2_OFF;"},
-  {"K8",       K8,         "3V_1_ON;"    , "3V_1_OFF;"},
-  {"K9",       K9,         "3V_2_ON;"    , "3V_2_OFF;"},
-  {"K10",      K10,        "PIR_1_ON;"   , "PIR_1_OFF;"},
-  {"K11",      K11,        "PIR_2_ON;"   , "PIR_2_OFF;"},
-  {"K12",      K12,        "GRE_ON;"     , "GRE_OFF"},
-  {"K13",      K13,        "YEL_ON;"     , "YEL_OFF"},
-  {"K14",      K14,        "RED_ON;"     , "RED_OFF"},
-  {"RST_NANO", RST_NANO,   "RNANO_ON;"   , "RNANO_OFF;"}
+  {"P",        PRESS,      "PRE_ON;"     , "PRE_OFF;"}, //(Y7 -  Pistão de Precionar Tecla)
+  {"KR",       KRST,       "RST_ON;"     , "RST_OFF;"}, //(RELÉ RESET)
+  {"K1",       K1,         "AV2_ON;"     , "AV2_OFF;"}, //(Y2 - Avanço berço 2)
+  {"K2",       K2,         "AV1_ON;"     , "AV1_OFF;"}, //(Y3 - Avanço berço 1)
+  {"K3",       K3,         "TR2_ON;"     , "TR2_OFF;"}, //(Y4 - Trava berço 2)
+  {"K4",       K4,         "TR1_ON;"     , "TR1_OFF;"}, //(Y5 - Trava berço 1)
+  {"K5",       K5,         "TRC_ON;"     , "TRC_OFF;"}, //(Y6 - Trava Câmera)
+  {"K6",       K6,         "BT2_ON;"     , "BT2_OFF;"}, //(Y8 - Aciona pilhas 2)
+  {"K7",       K7,         "BT1_ON;"     , "BT1_OFF;"}, //(Y9 - Aciona pilhas 1)
+  {"K8",       K8,         "3V1_ON;"     , "3V1_OFF;"}, //(3V Ligar berço 2)
+  {"K9",       K9,         "3V2_ON;"     , "3V2_OFF;"}, //(3V Ligar berço 1)
+  {"K10",      K10,        "IR1_ON;"     , "IR1_OFF;"}, //(5V IR Ligar 1)
+  {"K11",      K11,        "IR2_ON;"     , "IR2_OFF;"}, //(5V IR Ligar 2)
+  {"K12",      K12,        "GRE_ON;"     , "GRE_OFF;"}, //(GREEN LED)
+  {"K13",      K13,        "YEL_ON;"     , "YEL_OFF;"}, //(YELLOW LED)
+  {"K14",      K14,        "RED_ON;"     , "RED_OFF;"}, //(RED LED)
+  {"RNA", RST_NANO,        "RNA_ON;"     , "RNA_OFF;"}  //(RESET NANOS)
 };
 
 const int numComandos = sizeof(comandos) / sizeof(comandos[0]);
