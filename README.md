@@ -15,23 +15,23 @@ A resposta serial retornada para cada comando também é listada abaixo:
 
 | **Pino** | **Comando para ligar** | **Mensagem ON**  | **Comando para desligar**  | **Mensagem OFF**  |
 |---------:|------------------------|------------------|----------------------------|-------------------|
-| 18       | `P_1`                  | `PRESS_ON;`      | `P_0`                      | `PRESS_OFF;`      |
-| 19       | `KR_1`                 | `KRST_ON;`       | `KR_0`                     | `KRST_OFF;`       |
-| 20       | `K1_1`                 | `AV_B1_ON;`      | `K1_0`                     | `AV_B1_OFF;`      |
-| 21       | `K2_1`                 | `AV_B2_ON;`      | `K2_0`                     | `AV_B2_OFF;`      |
-| 22       | `K3_1`                 | `TR_B1_ON;`      | `K3_0`                     | `TR_B1_OFF;`      |
-| 23       | `K4_1`                 | `TR_B2_ON;`      | `K4_0`                     | `TR_B2_OFF;`      |
-| 24       | `K5_1`                 | `TR_CAM_ON;`     | `K5_0`                     | `TR_CAM_OFF;`     |
-| 25       | `K6_1`                 | `BT_B1_ON;`      | `K6_0`                     | `BT_B1_OFF;`      |
-| 45       | `K7_1`                 | `BT_B2_ON;`      | `K7_0`                     | `BT_B2_OFF;`      |
-| 27       | `K8_1`                 | `3V_1_ON;`       | `K8_0`                     | `3V_1_OFF;`       |
-| 28       | `K9_1`                 | `3V_2_ON;`       | `K9_0`                     | `3V_2_OFF;`       |
-| 29       | `K10_1`                | `PIR_1_ON;`      | `K10_0`                    | `PIR_1_OFF;`      |
-| 30       | `K11_1`                | `PIR_2_ON;`      | `K11_0`                    | `PIR_2_OFF;`      |
+| 18       | `P_1`                  | `PRE_ON;`        | `P_0`                      | `PRE_OFF;`        |
+| 19       | `KR_1`                 | `RST_ON;`        | `KR_0`                     | `RST_OFF;`        |
+| 20       | `K1_1`                 | `AV2_ON;`        | `K1_0`                     | `AV2_OFF;`        |
+| 21       | `K2_1`                 | `AV1_ON;`        | `K2_0`                     | `AV1_OFF;`        |
+| 22       | `K3_1`                 | `TR2_ON;`        | `K3_0`                     | `TR2_OFF;`        |
+| 23       | `K4_1`                 | `TR1_ON;`        | `K4_0`                     | `TR1_OFF;`        |
+| 24       | `K5_1`                 | `TRC_ON;`        | `K5_0`                     | `TRC_OFF;`        |
+| 25       | `K6_1`                 | `BT2_ON;`        | `K6_0`                     | `BT2_OFF;`        |
+| 45       | `K7_1`                 | `BT1_ON;`        | `K7_0`                     | `BT1_OFF;`        |
+| 27       | `K8_1`                 | `3V1_ON;`        | `K8_0`                     | `3V1_OFF;`        |
+| 28       | `K9_1`                 | `3V2_ON;`        | `K9_0`                     | `3V2_OFF;`        |
+| 29       | `K10_1`                | `IR1_ON;`        | `K10_0`                    | `IR1_OFF;`        |
+| 30       | `K11_1`                | `IR2_ON;`        | `K11_0`                    | `IR2_OFF;`        |
 | 31       | `K12_1`                | `GRE_ON;`        | `K12_0`                    | `GRE_OFF;`        |
 | 32       | `K13_1`                | `YEL_ON;`        | `K13_0`                    | `YEL_OFF;`        |
 | 33       | `K14_1`                | `RED_ON;`        | `K14_0`                    | `RED_OFF;`        |
-| 34       | `RNA_1`                | `RNANO_ON;`      | `RNA_0`                    | `RNANO_OFF;`      |
+| 34       | `RNA_1`                | `RNA_ON;`        | `RNA_0`                    | `RNA_OFF;`        |
 
 ---
 

@@ -24,8 +24,8 @@
 #define K7                   45 //(Y9 - AVANÇO PILHAS BERÇO 1) Antigo pino 26
 #define K8                   27 //(3V PILHAS BERÇO 2)
 #define K9                   28 //(3V PILHAS BERÇO 1)
-#define K10                  29 //(5V IR BERÇO 2)
-#define K11                  30 //(5V IR BERÇO 1)
+#define K10                  29 //(5V IR BERÇO 1)
+#define K11                  30 //(5V IR BERÇO 2)
 #define K12                  31 //(GREEN LED)
 #define K13                  32 //(YELLOW LED)
 #define K14                  33 //(RED LED)
