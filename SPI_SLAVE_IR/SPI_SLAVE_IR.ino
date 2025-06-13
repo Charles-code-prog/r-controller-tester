@@ -7,8 +7,8 @@ volatile bool IR_recebido = false;
 
 void setup() {
   Serial.begin(115200);
-  IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
-
+  //IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
+  pinMode(IR_PIN,INPUT);
   pinMode(MISO, OUTPUT);
   pinMode(10, INPUT);           // SS deve ser entrada para modo escravo
   SPCR |= _BV(SPE);             // Habilita SPI escravo
@@ -31,8 +31,8 @@ ISR(SPI_STC_vect) {
 }
 
 void loop() {
-  if (IrReceiver.decode()) {
+  if (!digitalRead(IR_PIN)) {
     IR_recebido = true;            // Marca que recebeu sinal IR
-    IrReceiver.resume();           // Pronto para o próximo
+    //IrReceiver.resume();           // Pronto para o próximo
   }
 }

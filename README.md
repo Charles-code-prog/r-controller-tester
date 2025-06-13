@@ -32,7 +32,11 @@ A resposta serial retornada para cada comando também é listada abaixo:
 | 32       | `K13_1`                | `YEL_ON;`        | `K13_0`                    | `YEL_OFF;`        |
 | 33       | `K14_1`                | `RED_ON;`        | `K14_0`                    | `RED_OFF;`        |
 | 34       | `RNA_1`                | `RNA_ON;`        | `RNA_0`                    | `RNA_OFF;`        |
-
+|          | `P_2`                  | `PRESS`          |                            |                   |
+|          | `B1_1`                 | `B1_ON`          | `B1_0`                     | `B1_OFF`          |
+|          | `B2_1`                 | `B2_ON`          | `B2_0`                     | `B2_OFF`          |
+|          | `PT_400`               | `Tempo_salvo: `  |                            |                   |
+|          | `ENA`                  | `ENA_STARTS`     |                            |                   |
 ---
 
 ## 📌 Observações

@@ -12,8 +12,8 @@ void setup() {
   Serial.begin(115200);
   SPI.begin();
   
-  IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
-
+  //IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
+  pinMode(IR_PIN, INPUT);
 
   pinMode(SS1, OUTPUT);
   pinMode(SS2, OUTPUT);
@@ -26,9 +26,9 @@ void setup() {
   delay(1000);
 }
 void loop() {
-  if (IrReceiver.decode()) {
+  if (!digitalRead(IR_PIN)) {
     IR_recebido = true;
-    IrReceiver.resume();
+    //IrReceiver.resume();
   }
   
   if (Serial.available()) {
@@ -51,7 +51,7 @@ void loop() {
 String requestFromSlave(int ssPin) {
   digitalWrite(ssPin, LOW);
   delayMicroseconds(10);  // tempo mínimo para ativar SS
-
+  delay()
   resposta[0] = SPI.transfer('1');    // envia comando, recebe 1º byte
   delayMicroseconds(50);              // permite o escravo preparar o próximo byte
   resposta[1] = SPI.transfer(0x00);   // recebe 2º byte
