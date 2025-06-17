@@ -11,38 +11,38 @@ const int pressTimeAddress = 0;
 #define S22 38        //(BERÇO 2 AVANÇADO)
 #define S31 39        //(PISTÃO CAMERA RECUADO)
 #define S32 40        //(PISTÃO CAMERA AVANÇADO)
-#define BT2 41        //(BOTÃO BERÇO 2)
-#define BT1 42        //(BOTÃO BERÇO 1)
+#define BT1 41        //(BOTÃO BERÇO 1)
+#define BT2 42        //(BOTÃO BERÇO 2)
 #define BTN_RESET 43  //(BOTÃO RST)
 #define KSEC 44       //(RELÉ DE SEGURANÇA)
 
 //SÁIDAS
-#define PRESS 18     //(Y7 - AVANÇO PRESSORES)
-#define KRST 19      //(RELÉ RESET)
-#define K1 20        //(Y2 - AV_B 2)
-#define K2 21        //(Y3 - AV_B 1)
-#define K3 22        //(Y4 - AVANÇA TRAVA CONTROLE BERÇO 2)
-#define K4 23        //(Y5 - AVANÇA TRAVA CONTROLE BERÇO 1)
-#define K5 24        //(Y6 - AVANA TRAVA CAMERAS)
-#define K6 25        //(Y8 - AVANÇO PILHAS BERÇO 2)
-#define K7 45        //(Y9 - AVANÇO PILHAS BERÇO 1) Antigo pino 26
-#define K8 27        //(3V PILHAS BERÇO 2)
-#define K9 28        //(3V PILHAS BERÇO 1)
-#define K10 29       //(5V IR BERÇO 1)
-#define K11 30       //(5V IR BERÇO 2)
-#define K12 31       //(GREEN LED)
-#define K13 32       //(YELLOW LED)
-#define K14 33       //(RED LED)
-#define RNA 34       //(RESET NANOS)
+#define PRESS 18      //(Y7 - AVANÇO PRESSORES)
+#define KRST 19       //(RELÉ RESET)
+#define K1 20         //(Y2 - AV_B 2)
+#define K2 21         //(Y3 - AV_B 1)
+#define K3 22         //(Y4 - AVANÇA TRAVA CONTROLE BERÇO 2)
+#define K4 23         //(Y5 - AVANÇA TRAVA CONTROLE BERÇO 1)
+#define K5 24         //(Y6 - AVANA TRAVA CAMERAS)
+#define K6 25         //(Y8 - AVANÇO PILHAS BERÇO 2)
+#define K7 45         //(Y9 - AVANÇO PILHAS BERÇO 1) Antigo pino 26
+#define K8 27         //(3V PILHAS BERÇO 2)
+#define K9 28         //(3V PILHAS BERÇO 1)
+#define K10 29        //(5V IR BERÇO 1)
+#define K11 30        //(5V IR BERÇO 2)
+#define K12 31        //(GREEN LED)
+#define K13 32        //(YELLOW LED)
+#define K14 33        //(RED LED)
+#define RNA 34        //(RESET NANOS)
 
 
 // Defina os arrays de pinos
 const int   B1_ON[]  = { K4,  K7, K8, K10};
 const int   B2_ON[]  = { K3,  K6, K9, K11};
-const int  B1_OFF[]  = { K10, K8, K7, K4};
-const int  B2_OFF[]  = { K11, K9, K6, K3};
-const int SEC_OFF[]  = {  K3, K4, K5, K6, K7, K8, K9, K10, K11};
-const int all_sen[]  = { S11,S12,S21,S22,S31,S32, KSEC};
+const int  B1_OFF[]  = {K5, K10, K8, K7, K4, K2};
+const int  B2_OFF[]  = {K5, K11, K9, K6, K3, K1};
+const int SEC_OFF[]  = { K3, K4, K5, K6, K7, K8, K9, K10, K11};
+const int all_sen[]  = { S11, S12, S21, S22, S31, S32, KSEC};
 
 bool EMERG_state = false;
 bool estadoAnteriorBT1 = LOW;
@@ -59,7 +59,7 @@ bool lastS32 = HIGH;
 String cmd = "";
 void SerialRead();
 void alternarPino(String cmd);
-void resetStarts(String cmd);
+void resetStarts();
 void return_sensors();
 void btnRST();
 void autoAction(String cmd);
@@ -68,7 +68,7 @@ int timeReturn();
 void secure();
 void lerEntradas();
 
-int Pressionar = timeReturn();
+int Pressionar = timeReturn(); // Salva o tempo de precionamento dos botões
 void SerialRead() {
   while (Serial.available()) {
     char c = Serial.read();
@@ -122,7 +122,7 @@ struct ComandoPino {
   const char* msgOff;
 };
 
-// Lista de todos os comandos
+// Lista de todos os comandos de acionamento dos Relés
 ComandoPino comandos[] = {
   { "P", PRESS, "PRE_ON;", "PRE_OFF;" },  //(Pistão de Precionar Tecla)
   { "KR", KRST, "RST_ON;", "RST_OFF;" },  //(RELÉ RESET)
@@ -145,7 +145,7 @@ ComandoPino comandos[] = {
 
 const int numComandos = sizeof(comandos) / sizeof(comandos[0]);
 
-void alternarPino(String cmd) {
+void alternarPino(String cmd) { // Função para acionamento dos Relés
   delay(10);
   for (int i = 0; i < numComandos; i++) {
     if (cmd == comandos[i].nome + "_1") {
@@ -160,10 +160,10 @@ void alternarPino(String cmd) {
     }
   }
   if (cmd == "P_2") { // Pressionar botão
-    Serial.println("PRESS");
     digitalWrite(PRESS, HIGH);
     delay(Pressionar);
     digitalWrite(PRESS, LOW);
+    Serial.println("PRESS;");
   }
 }
 
@@ -202,15 +202,15 @@ void btnRST() { // Botão de Reset
 
 void secure(){ // Rotina de segurança para evitar acidentes nos berços
   // Evita que o berço bata
-  if(digitalRead(S11) && digitalRead(S12))  digitalWrite(K1, HIGH); // Berço 2
-  if(digitalRead(S21) && digitalRead(S22))  digitalWrite(K2, HIGH); // Berço 1 
-  delay(1500);
-  if(!digitalRead(S12))  digitalWrite(K1, LOW);
-  if(!digitalRead(S22))  digitalWrite(K2, LOW);
+  if(digitalRead(S11))  digitalWrite(K2, HIGH); // Berço 1
+  if(digitalRead(S21))  digitalWrite(K1, HIGH); // Berço 2 
+  delay(1000);
+  digitalWrite(K1, LOW);
+  digitalWrite(K2, LOW);
 
   // Desativar todas as travas e alimentações
   acionarPinos(SEC_OFF, sizeof(SEC_OFF) / sizeof(int), LOW);
-  Serial.println("all_off");
+  Serial.println("ALL_OFF;");
 }
 
 void btnStart(int pin) { // Botões de START 1&2
@@ -237,6 +237,12 @@ void btnStart(int pin) { // Botões de START 1&2
   }
 }
 
+void resetStarts(){ //Permite um novo acionamento dos botões
+  start1 = false;
+  start2 = false;
+  Serial.println("ENA_STARTS;");
+}
+
 // Função para acionar os pinos com delay
 void acionarPinos(const int pinos[], int tamanho, int estado) {
   for (int i = 0; i < tamanho; i++) {
@@ -246,37 +252,33 @@ void acionarPinos(const int pinos[], int tamanho, int estado) {
 }
 
 
-void autoAction(String cmd) {
+void autoAction(String cmd) { // Função que trava, liga 3v e 5v e aciona pilhas
   if (cmd == "B1_1") {
-    Serial.println("B1_ON");
+    Serial.println("B1_ON;");
     acionarPinos(B1_ON, sizeof(B1_ON) / sizeof(int), HIGH);
-  } else if (cmd == "B2_1") {
-    Serial.println("B2_ON");
+  } 
+  if (cmd == "B2_1") {
+    Serial.println("B2_ON;");
     acionarPinos(B2_ON, sizeof(B2_ON) / sizeof(int), HIGH);
-  } else if (cmd == "B1_0") {
-    Serial.println("B1_OFF");
+  } 
+  if (cmd == "B1_0") {
+    Serial.println("B1_OFF;");
     acionarPinos(B1_OFF, sizeof(B1_OFF) / sizeof(int), LOW);
-  } else if (cmd == "B2_0") {
-    Serial.println("B2_OFF");
+    resetStarts();
+  }
+  if (cmd == "B2_0") {
+    Serial.println("B2_OFF;");
     acionarPinos(B2_OFF, sizeof(B2_OFF) / sizeof(int), LOW);
+    resetStarts();
   }
 }
 
-void resetStarts(String cmd) {
-  if (cmd == "ENA") {
-    start1 = false;
-    start2 = false;
-    Serial.println("ENA_STARTS");
-  }
-}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Ativo");
   // ENTRADAS
-  for (int i = 35; i <= 40; i++) {
-    pinMode(i, INPUT_PULLUP);
-  }
-  for (int i = 41; i < 45; i++) {
+  for (int i = 35; i <= 44; i++) {
     pinMode(i, INPUT_PULLUP);
   }
   //SAIDAS
@@ -293,7 +295,6 @@ void loop() {
   return_sensors();
   btnStart(BT1);
   btnStart(BT2);
-  resetStarts(cmd);
   return_sensors();
   pressTime(cmd);
   if(digitalRead(KSEC) && !EMERG_state){
@@ -303,6 +304,10 @@ void loop() {
   if(EMERG_state){
     btnRST();
   }
+  if(cmd == "ENA"){ 
+    resetStarts();
+  }
+  
   if(cmd=="CH"){
     lerEntradas();
   }
